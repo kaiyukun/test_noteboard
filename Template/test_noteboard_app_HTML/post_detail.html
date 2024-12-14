@@ -1,0 +1,85 @@
+{% extends "test_noteboard_app_HTML/Base.html" %}
+
+{% block content_block %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ post_detail.title }}</h2>
+            {% if post_detail.category %}
+                <p class="text-muted">カテゴリ: {{ post_detail.category.name }}</p>
+            {% endif %}
+            {% if post_detail.tags %}
+                <p class="text-muted">タグ: 
+                    {% for tag in post_detail.tags.all %}
+                        <span>{{ tag.name }},</span>
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ post_detail.content|safe }}</p>
+        </div>
+        <div class="card-footer text-muted">
+            <p>投稿者: 
+                <a href="{% url 'member_detail' post_detail.member.pk %}">
+                    {{ post_detail.member.username }}
+                </a>
+            </p>
+            <p>投稿日: {{ post_detail.created_at|date:"Y-m-d H:i" }}</p>
+            <p>更新日: {{ post_detail.updated_at|date:"Y-m-d H:i" }}</p>
+        </div>
+        <div class="d-flex justify-content-center my-3">
+            <form method="post" action="{% url 'like_toggle' post_detail.id %}" name="likeform">
+                {% csrf_token %}
+                {% if is_liked %}
+                    <a href="javascript:likeform.submit()"><i class="fa-solid fa-heart"></i></a>
+                {% else %}
+                    <a href="javascript:likeform.submit()"><i class="fa-regular fa-heart"></i></a>
+                {% endif %}
+            </form>
+        </div>
+        <p class="text-center">{{ post_detail.like_set.count }} likes</p>
+        
+        <!-- コメント一覧 -->
+        <div class="mt-4">
+            <h3>コメント一覧</h3>
+            <div class="comments-section">
+                {% for comment in comments %}
+                    <div class="comment p-3 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ comment.member.username }}</strong>
+                            <span class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+                        </div>
+                        <p class="mt-2">{{ comment.content }}</p>
+                    </div>
+                {% empty %}
+                    <p>まだコメントはありません。</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- コメント投稿フォーム -->
+        <div class="mt-4">
+            <h3>コメントを追加</h3>
+            <form method="post" action="{% url 'comment_create' post_detail.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ comment_form.content }}
+                </div>
+                <!-- ボタンを中央に配置 -->
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary mt-2">コメントを投稿</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <a href="javascript:history.back()" class="btn btn-secondary">戻る</a>
+    {% if request.user == post_detail.member %}
+        <form action="{% url 'post_delete' post_detail.pk %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit" onclick="return confirm('削除しますか?')">削除</button>
+        </form>
+        <a href="{% url 'post_update' post_detail.pk %}" class="btn btn-primary">編集</a>
+    {% endif %}
+</div>
+{% endblock %}

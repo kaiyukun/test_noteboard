@@ -1,0 +1,119 @@
+/* General styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.fa-heart {
+    color: red;
+}
+
+/* Post list styles */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item h5 {
+    margin-bottom: 0;
+}
+
+.btn-group .btn {
+    margin-left: 0.5rem;
+}
+
+/* Button styles */
+.btn {
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border: none;
+}
+
+/* Form styles */
+form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+form .form-group label {
+    font-weight: bold;
+}
+
+form .form-group input,
+form .form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+form .btn {
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* Card styles */
+.card {
+    margin-bottom: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+.card-header {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 10px 10px 0 0;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 0 0 10px 10px;
+}
+
+.card-text {
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+/* home */
+.like-area {
+    margin-right: 10px;
+}

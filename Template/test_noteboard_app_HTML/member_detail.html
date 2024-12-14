@@ -1,0 +1,59 @@
+{% extends "test_noteboard_app_HTML/Base.html" %}
+{% load static %}
+
+{% block content_block %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                {% if member.member_image %}
+                    <img src="{{ member.member_image.url }}" alt="{{ member.username }}さんのプロフィール画像" class="rounded-circle me-3" style="width: 100px; height: 100px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'images/unknown.jpg' %}" alt="デフォルトのプロフィール画像" class="rounded-circle me-3" style="width: 100px; height: 100px; object-fit: cover;">
+                {% endif %}
+                <h2 class="mb-0">{{ member.username }}</h2>
+            </div>
+            {% if user == member %}
+                <a href="{% url 'member_update' user.pk %}" class="btn btn-outline-secondary btn-sm ms-auto">編集する</a>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p><strong>フォロワー数:</strong> {{ member.followers.count }}</p>
+            <p><strong>フォロー数:</strong> {{ member.following.count }}</p>
+
+            {% if user == member %}
+                <!-- 自分の詳細画面にのみ表示 -->
+                <form method="post" action="{% url 'update_privacy' member.pk %}">
+                    {% csrf_token %}
+                    {% if member.only_followers_flg %}
+                        <button type="submit" class="btn btn-danger mt-3">フォロワーにのみ投稿を表示中 (解除)</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success mt-3">フォロワーにのみ投稿を表示する</button>
+                    {% endif %}
+                </form>
+            {% else %}
+                <!-- 他のメンバーの詳細画面に表示 -->
+                <form method="post" action="{% url 'follow_toggle' member.pk %}">
+                    {% csrf_token %}
+                    {% if is_following %}
+                        <button type="submit" class="btn btn-danger mt-3">フォローを外す</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success mt-3">フォローする</button>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h3>投稿一覧</h3>
+        {% for post in posts %}
+            <div class="post mt-3 p-3 border rounded">
+                <h4>{{ post.title }}</h4>
+                <p>{{ post.content|truncatechars:100 }}</p>
+                <a href="{% url 'post_detail' post.id %}" class="btn btn-link">続きを読む</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

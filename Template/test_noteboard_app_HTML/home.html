@@ -1,0 +1,160 @@
+{% extends "test_noteboard_app_HTML/Base.html" %}
+
+{% block content_block %}
+<div class="container mt-5">
+    <!-- ユーザー情報エリア -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">ようこそ、<span class="text-primary">{{ username }}</span>さん</h2>
+            <p>あなたのプロフィールを確認するには、以下のリンクをクリックしてください。</p>
+            <a class="btn btn-primary" href="{% url 'member_detail' user.id %}">プロフィール詳細</a>
+            <a class="btn btn-danger" href="{% url 'member_logout' %}">ログアウト</a>
+            <a class="btn btn-primary position-relative notification_button" href="{% url 'notification_list' %}">
+                通知
+                {% if unread_notifications_count > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ unread_notifications_count }}
+                    <span class="visually-hidden">未読通知</span>
+                </span>
+                {% endif %}
+            </a>
+        </div>
+    </div>
+
+    <!-- カテゴリフィルターエリア -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title mb-4">カテゴリを選択</h2>
+            <form method="get" action="{% url 'home' %}">
+                <div class="btn-group" role="group" aria-label="カテゴリ">
+                    <button type="submit" name="category" value="" class="btn btn-outline-secondary {% if not request.GET.category %}active{% endif %}">すべて</button>
+                    {% for category in categories %}
+                        <button type="submit" name="category" value="{{ category.id }}" class="btn btn-outline-secondary {% if request.GET.category == category.id|stringformat:'s' %}active{% endif %}">
+                            {{ category.name }}
+                        </button>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 検索エリア -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title mb-4">投稿を検索</h2>
+            <form method="get" action="{% url 'home' %}">
+                <div class="input-group">
+                    <input type="text" name="query" class="form-control" placeholder="キーワードを入力" value="{{ request.GET.query }}">
+                    <button class="btn btn-outline-secondary" type="submit">検索</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 検索結果でない場合のみ表示 -->
+    {% if not is_search %}
+    <!-- 最新記事エリア -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">最新記事</h2>
+            <div class="list-group">
+                {% for post in latest_posts %}
+                <a href="{% url 'post_detail' post.id %}" class="list-group-item list-group-item-action">
+                    <h4>{{ post.title }}</h4>
+                    <p>{{ post.content|safe|truncatechars:100 }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 人気記事エリア -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">人気記事</h2>
+            <div class="list-group">
+                {% for post in popular_posts %}
+                <a href="{% url 'post_detail' post.id %}" class="list-group-item list-group-item-action">
+                    <h4>{{ post.title }}</h4>
+                    <p>{{ post.content|safe|truncatechars:100 }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 投稿一覧エリア -->
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title mb-4">投稿一覧</h2>
+            <div class="list-group">
+                {% for post in post_list %}
+                <a href="{% url 'post_detail' post.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1">{{ post.title }}</h4>
+                        <p>{{ post.content|safe|truncatechars:100 }}</p>
+                    </div>
+                    <div class="like-area">
+                        <i class="fa-solid fa-heart"></i>
+                        {{ post.like_set.count }}
+                        <!-- 投稿者情報 -->
+                        <div class="me-3">
+                            <div class="text-muted mb-0">投稿者:{{ post.member.username }}</div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- ページネーション -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <!-- 前のページへのリンク -->
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                    {% endif %}
+            
+                    <!-- ページ番号をループで生成 -->
+                    {% for page_num in page_obj.paginator.page_range %}
+                        {% if page_num == page_obj.number %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+            
+                    <!-- 次のページへのリンク -->
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        <a class="btn btn-primary" href="{% url 'post_create' %}">新規登録</a>
+    </div>
+
+</div>
+{% endblock %}

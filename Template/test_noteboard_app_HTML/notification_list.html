@@ -1,0 +1,57 @@
+{% extends "test_noteboard_app_HTML/Base.html" %}
+{% load static %}
+
+{% block content_block %}
+<div class="container mt-4">
+    <h2 class="mb-4">通知一覧</h2>
+
+    {% if notifications %}
+        <div class="list-group">
+            {% for notification in notifications %}
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <!-- プロフィール画像の表示 -->
+                        {% if notification.sender.member_image %}
+                            <img src="{{ notification.sender.member_image.url }}" alt="{{ notification.sender.username }}のプロフィール画像" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                        {% else %}
+                            <img src="{% static 'images/unknown.jpg' %}" alt="デフォルトのプロフィール画像" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                        {% endif %}
+                        
+                        <!-- メンバー名をプロフィールページリンクにする -->
+                        <div>
+                            {% if notification.notification_type == 'like' %}
+                                <i class="bi bi-hand-thumbs-up me-2 text-primary"></i>
+                                <a href="{% url 'member_detail' notification.sender.pk %}">
+                                    <strong>{{ notification.sender }}</strong>
+                                </a>があなたの投稿
+                                <a href="{% url 'post_detail' notification.post.pk %}">
+                                    <strong>{{ notification.post.title }}</strong>
+                                </a>にいいねしました。
+                            {% elif notification.notification_type == 'comment' %}
+                                <i class="bi bi-chat-left-dots me-2 text-success"></i>
+                                <a href="{% url 'member_detail' notification.sender.pk %}">
+                                    <strong>{{ notification.sender }}</strong>
+                                </a>があなたの投稿
+                                <a href="{% url 'post_detail' notification.post.pk %}">
+                                    <strong>{{ notification.post.title }}</strong>
+                                </a>にコメントしました。
+                            {% elif notification.notification_type == 'follow' %}
+                                <i class="bi bi-person-plus me-2 text-info"></i>
+                                <a href="{% url 'member_detail' notification.sender.pk %}">
+                                    <strong>{{ notification.sender }}</strong>
+                                </a>があなたをフォローしました。
+                            {% endif %}
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ notification.created_at|date:"Y-m-d H:i" }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            現在、通知はありません。
+        </div>
+    {% endif %}
+    <a href="javascript:history.back()" class="btn btn-secondary mt-4">戻る</a>
+</div>
+{% endblock %}

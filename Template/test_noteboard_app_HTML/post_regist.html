@@ -1,0 +1,39 @@
+{% extends "test_noteboard_app_HTML/Base.html" %}
+
+{% block content_block %}
+<div class="container mt-5">
+    <h1 class="mb-4">
+        {% if not form.instance.pk %}
+        投稿する
+        {% else %}
+        投稿を更新する
+        {% endif %}
+    </h1>
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {{ form.media }}
+        <div class="form-group">
+            <label for="categories">カテゴリを選択</label>
+            {{ form.category }}
+        </div>
+        <div class="form-group">
+            <label for="title">タイトル</label>
+            {{ form.title }}
+        </div>
+        <div class="form-group">
+            <label for="content">本文</label>
+            {{ form.content }}
+        </div>
+        <div class="form-group">
+            <label for="content">タグ</label>
+            {{ form.tags }}
+        </div>
+        <div class="form-group">
+            <label for="id_new_tags">新しいタグ（カンマ区切りで追加）</label>
+            <input type="text" name="new_tags" id="id_new_tags" placeholder="タグを追加" value="{{ form.new_tags.value }}">
+        </div>
+        <a href="javascript:history.back()" class="btn btn-secondary">戻る</a>
+        <button type="submit" class="btn btn-primary">登録</button>
+    </form>
+</div>
+{% endblock %}
