@@ -1,0 +1,21 @@
+# .gitignore for Django
+
+# Python bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# SQLite database
+db.sqlite3
+
+# Static files
+/static/
+
+# Media files
+/media/
+
+# Virtual environment
+venv/
+
+# Environment variables file
+*.env
